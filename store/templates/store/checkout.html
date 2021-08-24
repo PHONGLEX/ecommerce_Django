@@ -1,0 +1,227 @@
+{% extends "store/main.html" %}
+{% load static %}
+
+{% block content %}
+	
+
+<div class="album py-5 bg-light">
+    <div class="container">
+    	<div class="text-center">
+	      <h2>Checkout</h2>
+	      <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+	    </div>
+
+    	<div class="row">
+    		<div class="col-md-6">
+    			<div class="row" id="from-wrapper">
+    				<form method="post" id="form">
+    					{% csrf_token %}
+    					<div id="user-info">
+    						<h4>User information</h4>
+	    					<div class="row mb-5">
+	    						<div class="col-sm-6">
+					              <label for="firstName" class="form-label">Name</label>
+					              <input type="text" class="form-control" name="name" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid first name is required.
+					              </div>
+					            </div>
+
+					            <div class="col-sm-6">
+					              <label for="lastName" class="form-label">Email</label>
+					              <input type="text" class="form-control" name="email" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid last name is required.
+					              </div>
+					            </div>
+	    					</div>
+    					</div>    					
+	    				
+    					<div id="shipping-info">
+    						<h4>Shipping information</h4>
+				            <div class="row">
+				            	<div class="col-sm-6">
+					              <label for="firstName" class="form-label">Address</label>
+					              <input type="text" class="form-control" name="address" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid first name is required.
+					              </div>
+					            </div>
+
+					            <div class="col-sm-6">
+					              <label for="lastName" class="form-label">City</label>
+					              <input type="text" class="form-control" name="city" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid last name is required.
+					              </div>
+					            </div>
+
+					            <div class="col-sm-6">
+					              <label for="firstName" class="form-label">State</label>
+					              <input type="text" class="form-control" name="state" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid first name is required.
+					              </div>
+					            </div>
+
+					            <div class="col-sm-6">
+					              <label for="lastName" class="form-label">Zipcode</label>
+					              <input type="text" class="form-control" name="zipcode" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid last name is required.
+					              </div>
+					            </div>
+
+					            <div class="col-sm-6">
+					              <label for="lastName" class="form-label">Country</label>
+					              <input type="text" class="form-control" name="country" placeholder="" value="" required>
+					              <div class="invalid-feedback">
+					                Valid last name is required.
+					              </div>
+					            </div>
+				            </div>
+    					</div>
+			            
+	    				
+	    				<hr>
+	    				<button type="submit" class="btn btn-success btn-lg float-end" id="form-button">Continue</button>
+	    				
+    				</form>
+    			</div>  
+
+    			<br>
+    			<div class="row hidden" id="payment-info">
+    				<small>Paypal option</small>
+    				<button class="btn btn-outline-secondary mt-3" id="make-payment">Make Payment</button>
+    			</div>
+    		</div>
+
+    		<div class="col-md-6">
+    			<div class="row">
+    				<div class="col">
+	    			<a href="{% url 'store:cart' %}" class="btn btn-outline-secondary">&#x2190; Back to cart</a>
+	    		</div>
+    			<div class="col-md-12">
+	    			<table class="table table-striped">
+					  <thead>
+					    <tr>
+					      <th></th>
+					      <th scope="col"><strong>Item</strong></th>
+					      <th scope="col"><strong>Quantiy</strong></th>
+					      <th scope="col"><strong>Price</strong></th>
+					      <th scope="col"><strong>Total</strong></th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	{% for item in items %}
+					  		<tr>
+						      <th>
+						      	<img class="img-thumbnail" src="{{item.product.thumbnailURL}}"
+						      	width="180px" height="180px">
+						      </th>
+						      <td>{{item.product.name}}</td>
+						      <td>x{{item.quantity}}</td>
+						      <td>${{item.product.price}}</td>
+						      <td>${{item.get_total}}</td>
+						    </tr>
+					  	{% endfor %}
+					    
+					    <tr>
+					    	<th colspan="4">
+					    		
+					    	</th>
+					    	<th>
+					    		<span>Total: ${{order.get_cart_total}}</span>
+					    	</th>
+					    </tr>
+					  </tbody>
+					</table>
+	    		</div>
+    			</div>
+    			
+    		</div>
+    	</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	var shipping = "{{order.shipping}}";
+	var total = "{{order.get_cart_total}}"
+
+	if (shipping == "False") {
+		document.getElementById("shipping-info").innerHTML = ''
+	}
+
+	if (user != "AnonymousUser") {
+		document.getElementById('user-info').innerHTML = ''
+	}
+
+	if (user != "AnonymousUser" && shipping == "False") {
+		document.getElementById("from-wrapper").classList.add("hidden")
+		document.getElementById('payment-info').classList.remove("hidden")
+	}
+
+	var form = document.getElementById('form')
+	form.addEventListener("submit", function(e) {
+		e.preventDefault();
+
+		console.log("form submitted");
+		document.getElementById('form-button').classList.add('hidden');
+		document.getElementById('payment-info').classList.remove('hidden');
+	})
+
+	document.getElementById('make-payment').addEventListener("click", function(e) {
+		submitFormData();
+	})
+	function submitFormData() {
+		console.log("Payment button clicked");
+
+		var userFormData = {
+			'name': null,
+			'email': null,
+			'total': total,			
+		}
+
+		var shippingInfo = {
+			'address': null,
+			'city': null,
+			'state': null,			
+			'zipcode': null,
+		}
+
+		if (shipping !== "False") {
+				shippingInfo.address = form.address.value;
+				shippingInfo.city = form.city.value;
+				shippingInfo.state = form.state.value;
+				shippingInfo.zipcode = form.zipcode.value;				
+		}
+
+		if (user === "AnonymousUser") {
+			userFormData.name = form.name.value;
+			userFormData.email = form.email.value;			
+		}
+
+		var url = "/process_order/"
+
+		fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": csrftoken
+			},
+			body: JSON.stringify({
+				'form': userFormData,
+				'shipping': shippingInfo
+			})
+		})
+		.then(response => response.json())
+		.then(res => {
+			console.log(res)
+			alert("Transaction completed");
+			cart = {}
+			document.cookie = `cart=${JSON.stringify(cart)};domain=;path=/`
+			window.location.href = "{% url "store:store" %}"
+		})
+	}
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "store/main.html" %}
+{% load static %}
+
+{% block content %}
+<div class="album py-5 bg-light">
+    <div class="container">
+    	<div class="row">
+    		<div class="col-md-3 mb-5">
+    			<a href="{% url 'store:store' %}" class="btn btn-outline-secondary">&#x2190; Continue Shopping</a>
+    		</div>
+    		<div class="col-md-12">
+    			<table class="table table-striped">
+				  <thead>
+				    <tr>
+				      <th scope="col">#</th>
+				      <th></th>
+				      <th scope="col"><strong>Item</strong></th>
+				      <th scope="col"><strong>Quantiy</strong></th>
+				      <th scope="col"><strong>Price</strong></th>
+				      <th scope="col"><strong>Total Price</strong></th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				  	{% for item in items %}
+				  		<tr>
+					      <th scope="row">{{forloop.counter}}</th>
+					      <th>
+					      	<img class="img-thumbnail" src="{{item.product.thumbnailURL}}">
+					      </th>
+					      <td>{{item.product.name}}</td>
+					      <td>
+					      	<a href="#" class="update-cart" data-product="{{item.product.id}}" data-action="add"><i class="fas fa-plus"></i></a>		
+					      	{{item.quantity}}
+					      	<a href="#" class="update-cart" data-product="{{item.product.id}}" data-action="remove"><i class="fas fa-minus"></i></a>
+					  	  </td>
+					      <td>${{item.product.price}}</td>
+					      <td>${{item.get_total}}</td>
+					    </tr>
+				  	{% endfor %}
+				    <tr>
+				    	<th colspan="5">
+				    		
+				    	</th>
+				    	<th>
+				    		<span>Total: ${{order.get_cart_total}}</span>
+				    	</th>
+				    </tr>
+				  </tbody>
+				</table>
+    		</div>
+    		<div class="col-md-12">
+    			<a href="{% url 'store:checkout' %}" class="btn btn-outline-secondary float-end">Checkout</a>
+    		</div>				
+    	</div>
+    </div>
+</div>
+	
+</div>
+
+{% endblock %}
